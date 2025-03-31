@@ -206,75 +206,72 @@
             });
         }
 
-        async function downloadVideo() {
+
+        function downloadVideo() {
             const videoUrl = document.getElementById('videoUrl').value.trim();
             const resultDiv = document.getElementById('result');
+            
+            // Clear previous result
             resultDiv.innerHTML = '';
+            
             if (!videoUrl) {
                 showError('Silakan masukkan URL TikTok.');
                 return;
             }
-            showLoading('Fetching video details...');
-            try {
-                const response = await axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://api.im-rerezz.xyz/api/dl/tiktok?url=${encodeURIComponent(videoUrl)}`)}`);
-                const data = JSON.parse(response.data.contents);
-                
-                console.log(data);
+            
+            showLoading(`Preparing download...`);
+            
+            $.ajax({
+                url: '/api/ttdl',
+                type: 'GET',
+                data: { url: videoUrl },
+                success: function(data) {
+                    let videoLink = '';
+                    let musicLink = '';
 
-                if (data.status && data.data) {
-                    const videoLink = data.data.videoUrl;
-                    const musicLink = data.data.musicUrl;
+                    // Find video and music links
+                    const downloadLinks = data.download_links;
+                    const videoQuality = downloadLinks.find(link => link.quality === 'hd');
+                    const audioQuality = downloadLinks.find(link => link.quality === '128kbps');
 
-                    resultDiv.innerHTML = `
-                        <div class="flex flex-col items-center">
-                            <video id="smallVideo" controls class="w-full h-auto rounded-lg mb-4">
-                                <source src="${videoLink}" type="video/mp4">
-                                Browser Anda tidak mendukung pemutaran video.
-                            </video>
-                            <div class="download-buttons grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <button onclick="downloadFile('${musicLink}')" class="w-full bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 active:from-green-700 active:to-teal-800 text-white py-4 px-6 rounded-2xl transition-all duration-300 flex items-center justify-center space-x-3 font-semibold shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-green-500/50 focus:ring-offset-2 dark:ring-offset-gray-800">
-                                    <i class="fas fa-download text-sm"></i>
-                                    <span>Download Audio</span>
-                                </button>
-                                <button onclick="downloadFile('${videoLink}')" class="w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 active:from-purple-700 active:to-pink-800 text-white py-4 px-6 rounded-2xl transition-all duration-300 flex items-center justify-center space-x-3 font-semibold shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-purple-500/50 focus:ring-offset-2 dark:ring-offset-gray-800">
-                                    <i class="fas fa-download text-sm"></i>
-                                    <span>Download Video</span>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    showSuccess('Success!');
-                    resultDiv.classList.remove('hidden');
-                } else {
-                    showError('Gagal mengunduh video. Pesan: ' + (data.message || 'URL tidak valid.'));
-                }
-            } catch (error) {
-                showError('Terjadi kesalahan: ' + error.message);
-            }
-        }
-
-        function downloadFile(url) {
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                    if (videoQuality) {
+                        videoLink = videoQuality.url; 
                     }
-                    return response.blob();
-                })
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.style.display = 'none';
-                    a.href = url;
-                    a.download = '';
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    showSuccess('Download started');
-                })
-                .catch(error => {
-                    showError('Download failed: ' + error.message);
-                });
+                    if (audioQuality) {
+                        musicLink = audioQuality.url; 
+                    }
+
+                    // Display result
+                    if (videoLink || musicLink) {
+                        resultDiv.innerHTML = `
+                            <div class="flex flex-col items-center">
+                                <video id="smallVideo" controls class="w-full h-auto rounded-lg mb-4">
+                                    <source src="${videoLink}" type="video/mp4">
+                                    Browser Anda tidak mendukung pemutaran video.
+                                </video>
+                                <div class="download-buttons grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    ${musicLink ? `<button onclick="downloadFile('${musicLink}')" class="w-full bg-gradient-to-r from-green-500 to-teal-600 ...">
+                                        <i class="fas fa-download text-sm"></i>
+                                        <span>Download Audio</span>
+                                    </button>` : ''}
+                                    ${videoLink ? `<button onclick="downloadFile('${videoLink}')" class="w-full bg-gradient-to-r from-purple-500 to-pink-600 ...">
+                                        <i class="fas fa-download text-sm"></i>
+                                        <span>Download Video</span>
+                                    </button>` : ''}
+                                </div>
+                            </div>
+                        `;
+                        resultDiv.classList.remove('hidden');
+                        showSuccess('Success!');
+                    } else {
+                        showError('Download URL not found for the selected format');
+                    }
+                },
+                error: function(xhr) {
+                    Swal.close();
+                    showError(xhr.responseJSON?.error || 'Download failed');
+                }
+            });
         }
     </script>
 </body>

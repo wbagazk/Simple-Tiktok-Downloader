@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
         return res.status(400).send(JSON.stringify({
             status: 400,
             creator: 'WBK',
-            error: 'Masukkan URL TikTok!. Example: /api/ttdl?url=https://www.tiktok.com/@video_hiburan62/video/7486266642637360390?is_from_webapp=1&sender_device=pc'
+            error: 'Masukkan URL TikTok!. Example: /api/download?url=https://www.tiktok.com/@video_hiburan62/video/7486266642637360390?is_from_webapp=1&sender_device=pc'
         }, null, 2));
     }
 
