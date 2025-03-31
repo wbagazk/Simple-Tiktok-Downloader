@@ -32,6 +32,9 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-app.use(`/api/ttdl`, limiter, require(`./api/ttdl`));
+const routes = ["ttdl"];
+routes.forEach(route => {
+    app.use(`/api/${route}`, limiter, require(`./api/${route}`));
+});
 
 module.exports = app;
