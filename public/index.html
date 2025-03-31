@@ -222,7 +222,7 @@
             showLoading(`Preparing download...`);
             
             $.ajax({
-                url: '/api/ttdl',
+                url: '/api/download',
                 type: 'GET',
                 data: { url: videoUrl },
                 success: function(data) {
