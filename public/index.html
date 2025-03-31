@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Download TikTok videos in high quality without watermark. Fast and free TikTok video downloader.">
+    <meta name="keywords" content="TikTok Downloader, TikTok Video Download, No Watermark, Free Downloader">
+    <meta name="author" content="WBK">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="TikTok Video Downloader - Fast & Free">
+    <meta property="og:description" content="Download TikTok videos instantly without watermark. 100% free and easy to use.">
+    <meta property="og:image" content="https://yourwebsite.com/thumbnail.jpg">
+    <meta property="og:url" content="https://yourwebsite.com">
+    <meta property="og:type" content="website">
+    <title>TikTok Downloader - Fast & Free</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-gray-100 to-blue-50 dark:from-gray-900 dark:to-gray-800 min-h-screen flex flex-col items-center justify-start p-4 md:p-8 lg:p-12 font-sans">
+    
+    <!-- Navigation Section -->
+    <nav class="fixed top-4 right-4">
+        <div class="flex justify-between items-center">
+            <button id="menuToggle" class="text-gray-700 dark:text-gray-200 focus:outline-none">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+        <div id="navMenu" class="hidden mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg fixed right-0 z-10">
+            <a href="https://igdown.wbagazk.my.id/" class="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Instagram Downloader</a>
+            <a href="#" class="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Facebook Downloader (Comingsoon)</a>
+            <a href="#" class="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Twitter Downloader (Comingsoon)</a>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <header class="w-full max-w-3xl mx-auto text-center space-y-4 mb-10">
+        <div class="inline-flex items-center justify-center p-3 rounded-full bg-blue-50 dark:bg-blue-900/30 shadow-lg">
+            <i class="fab fa-tiktok text-white text-4xl"></i>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-black to-white dark:from-white dark:to-gray-400 bg-clip-text text-transparent">
+            TikTok Video & Audio Downloader
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-300">Fast • No Watermark • Free</p>
+    </header>
+    
+    <!-- Download Section -->
+    <main class="w-full max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-6 md:p-8 space-y-6">
+        <div class="relative group" id="downloadSection">
+            <input type="text" id="videoUrl" placeholder="Paste TikTok URL here..." 
+                   class="w-full pl-14 pr-6 py-4 bg-gray-50 dark:bg-gray-900/70 border-0 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/30 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm transition-all duration-300">
+            <div class="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+                <i class="fas fa-link text-gray-400"></i>
+            </div>
+        </div>
+        <button id="downloadVideo" onclick="downloadVideo()" 
+                class="w-full bg-gradient-to-r from-black to-white hover:from-gray-800 hover:to-gray-300 text-white py-4 px-6 rounded-2xl flex items-center justify-center space-x-3 font-semibold shadow-md hover:shadow-lg">
+            <i class="fas fa-cloud-download-alt text-sm"></i>
+            <span>Get Started</span>
+        </button>
+    </main>
+
+    <!-- Result Section -->
+    <main id="result" class="hidden w-full max-w-3xl mx-auto mt-10 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-6 md:p-8 space-y-6">
+        <div class="flex flex-col items-center">
+            <video id="smallVideo" controls class="w-full h-auto rounded-lg mb-4">
+                <source id="videoSource" type="video/mp4">
+                Browser Anda tidak mendukung pemutaran video.
+            </video>
+            <div class="download-buttons grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button id="downloadVideoButton" class="w-full bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 active:from-green-700 active:to-teal-800 text-white py-4 px-6 rounded-2xl transition-all duration-300 flex items-center justify-center space-x-3 font-semibold shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-green-500/50 focus:ring-offset-2 dark:ring-offset-gray-800">
+                    <i class="fas fa-download text-sm"></i>
+                    <span>Download Video</span>
+                </button>
+                <button id="downloadAudioButton" class="w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 active:from-purple-700 active:to-pink-800 text-white py-4 px-6 rounded-2xl transition-all duration-300 flex items-center justify-center space-x-3 font-semibold shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-purple-500/50 focus:ring-offset-2 dark:ring-offset-gray-800">
+                    <i class="fas fa-download text-sm"></i>
+                    <span>Download Audio</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- How to Use Section -->
+    <section class="w-full max-w-3xl mx-auto mt-10 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-6 md:p-8 space-y-6 transform transition-all duration-500 hover:shadow-xl">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">How to Use</h2>
+        <div class="space-y-4">
+            <div class="flex items-start text-sm md:text-base text-gray-600 dark:text-gray-300">
+                <i class="fas fa-arrow-right mr-3 text-blue-500 mt-1"></i>
+                <p>1. Paste a TikTok URL in the input box above.</p>
+            </div>
+            <div class="flex items-start text-sm md:text-base text-gray-600 dark:text-gray-300">
+                <i class="fas fa-arrow-right mr-3 text-blue-500 mt-1"></i>
+                <p>2. Click "Get Started" to fetch video or music.</p>
+            </div>
+            <div class="flex items-start text-sm md:text-base text-gray-600 dark:text-gray-300">
+                <i class="fas fa-arrow-right mr-3 text-blue-500 mt-1"></i>
+                <p>3. Choose Video or Audio format to download.</p>
+            </div>
+            <div class="flex items-start text-sm md:text-base text-gray-600 dark:text-gray-300">
+                <i class="fas fa-arrow-right mr-3 text-blue-500 mt-1"></i>
+                <p>4. Enjoy your high-quality download instantly!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="w-full max-w-3xl mx-auto mt-10 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-6 md:p-8 space-y-6 transform transition-all duration-500 hover:shadow-xl">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">FAQ</h2>
+        <div class="space-y-4">
+            <div>
+                <div class="flex items-center text-sm md:text-base text-gray-600 dark:text-gray-300">
+                    <i class="fas fa-question-circle mr-2 text-blue-500"></i>
+                    <span>Is this free to use?</span>
+                </div>
+                <p class="text-sm md:text-base text-gray-600 dark:text-gray-400 ml-6">Yes, completely free with no hidden fees!</p>
+            </div>
+            <div>
+                <div class="flex items-center text-sm md:text-base text-gray-600 dark:text-gray-300">
+                    <i class="fas fa-question-circle mr-2 text-blue-500"></i>
+                    <span>What formats are available?</span>
+                </div>
+                <p class="text-sm md:text-base text-gray-600 dark:text-gray-400 ml-6">Audio for .MP3 and Video for .MP4, download in high quality.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="w-full max-w-3xl mx-auto mt-10 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-6 md:p-8 space-y-6 transform transition-all duration-500 hover:shadow-xl">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">Contact</h2>
+        <div class="space-y-4">
+            <div class="flex items-center text-sm md:text-base text-gray-600 dark:text-gray-300">
+                <i class="fas fa-envelope mr-2 text-blue-500"></i>
+                <span>Email: <a href="#" id="protectedEmail">[email&#160;protected]</a></span>
+            </div>
+        </div>
+    </section>
+
+    <footer class="w-full max-w-3xl mx-auto mt-10 text-center text-gray-500 dark:text-gray-400 text-sm py-6">
+        <p>&copy; 2025 TikTok Downloader by WBK. All rights reserved.</p>
+    </footer>
+
+    <script>
+        $(document).ready(function() {
+            $('#menuToggle').click(function(event) {
+                event.stopPropagation();
+                $('#navMenu').toggleClass('hidden');
+            });
+            $(document).click(function() {
+                if (!$('#navMenu').hasClass('hidden')) {
+                    $('#navMenu').addClass('hidden');
+                }
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            let email = "wbagazk@gmail.com";
+            let emailElement = document.getElementById("protectedEmail");
+            emailElement.href = "mailto:" + email;
+            emailElement.textContent = email;
+        });
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        function showLoading(message) {
+            return Swal.fire({
+                html: `
+                    <div class="space-y-4">
+                        <div class="w-16 h-16 mx-auto border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+                        <div class="text-gray-600 text-sm">${message}</div>
+                    </div>
+                `,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                background: '#ffffff',
+                customClass: { popup: 'rounded-3xl shadow-lg' }
+            });
+        }
+
+        function showSuccess(message) {
+            Toast.fire({
+                icon: 'success',
+                title: message,
+                background: '#F0FDF4',
+                iconColor: '#22C55E'
+            });
+        }
+
+        function showError(message) {
+            Toast.fire({
+                icon: 'error',
+                title: message,
+                background: '#FEF2F2',
+                iconColor: '#EF4444'
+            });
+        }
+
+        async function downloadVideo() {
+            const videoUrl = document.getElementById('videoUrl').value.trim();
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '';
+            if (!videoUrl) {
+                showError('Silakan masukkan URL TikTok.');
+                return;
+            }
+            showLoading('Fetching video details...');
+            try {
+                const response = await axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://api.im-rerezz.xyz/api/dl/tiktok?url=${encodeURIComponent(videoUrl)}`)}`);
+                const data = JSON.parse(response.data.contents);
+                
+                console.log(data);
+
+                if (data.status && data.data) {
+                    const videoLink = data.data.videoUrl;
+                    const musicLink = data.data.musicUrl;
+
+                    resultDiv.innerHTML = `
+                        <div class="flex flex-col items-center">
+                            <video id="smallVideo" controls class="w-full h-auto rounded-lg mb-4">
+                                <source src="${videoLink}" type="video/mp4">
+                                Browser Anda tidak mendukung pemutaran video.
+                            </video>
+                            <div class="download-buttons grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <button onclick="downloadFile('${musicLink}')" class="w-full bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 active:from-green-700 active:to-teal-800 text-white py-4 px-6 rounded-2xl transition-all duration-300 flex items-center justify-center space-x-3 font-semibold shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-green-500/50 focus:ring-offset-2 dark:ring-offset-gray-800">
+                                    <i class="fas fa-download text-sm"></i>
+                                    <span>Download Audio</span>
+                                </button>
+                                <button onclick="downloadFile('${videoLink}')" class="w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 active:from-purple-700 active:to-pink-800 text-white py-4 px-6 rounded-2xl transition-all duration-300 flex items-center justify-center space-x-3 font-semibold shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-purple-500/50 focus:ring-offset-2 dark:ring-offset-gray-800">
+                                    <i class="fas fa-download text-sm"></i>
+                                    <span>Download Video</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    showSuccess('Success!');
+                    resultDiv.classList.remove('hidden');
+                } else {
+                    showError('Gagal mengunduh video. Pesan: ' + (data.message || 'URL tidak valid.'));
+                }
+            } catch (error) {
+                showError('Terjadi kesalahan: ' + error.message);
+            }
+        }
+
+        function downloadFile(url) {
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = '';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    showSuccess('Download started');
+                })
+                .catch(error => {
+                    showError('Download failed: ' + error.message);
+                });
+        }
+    </script>
+</body>
+</html>
