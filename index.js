@@ -32,8 +32,6 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-routes.forEach(route => {
-    app.use(`/api/ttdl`, limiter, require(`./api/ttdl`));
-});
+app.use(`/api/ttdl`, limiter, require(`./api/ttdl`));
 
 module.exports = app;
