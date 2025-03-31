@@ -61,7 +61,7 @@ function sendUpdateToClients() {
     });
 }
 
-const routes = ["ttdl"];
+const routes = ["download"];
 routes.forEach(route => {
     app.use(`/api/${route}`, limiter, require(`./api/${route}`));
 });
