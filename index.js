@@ -22,19 +22,12 @@ const limiter = rateLimit({
 app.use(cors());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use((req, res, next) => {
-    totalRequests++;
-    sendUpdateToClients();
-    next();
-});
-
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-const routes = ["ttdl"];
+const routes = ["ytdl", "twitterdl", "igdl", "fbdl", "ttdl", "githubstalk", "searchgroups", "ttsearch", "ytsearch", "llama-3.3-70b-versatile", "txt2img", "ssweb", "translate", "nulis", "cekkhodam", "tahukahkamu", "brat", "qc", "detiknews", "kompasnews", "cekrekening", "cekcodebank"];
 routes.forEach(route => {
     app.use(`/api/${route}`, limiter, require(`./api/${route}`));
 });
-
 module.exports = app;

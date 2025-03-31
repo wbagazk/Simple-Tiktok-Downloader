@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realtime Monitoring</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .monitor-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        #total-requests {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+        #status {
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="monitor-container">
+        <h1>Total Requests</h1>
+        <div id="total-requests">0</div>
+        <div id="status">Connected</div>
+    </div>
+
+    <script>
+        const eventSource = new EventSource("/monitor");
+        const statusEl = document.getElementById("status");
+
+        eventSource.onopen = () => {
+            statusEl.textContent = "Connected";
+            statusEl.style.color = "green";
+        };
+
+        eventSource.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            document.getElementById("total-requests").textContent = data.totalRequests;
+        };
+
+        eventSource.onerror = () => {
+            statusEl.textContent = "Disconnected, Reconnecting...";
+            statusEl.style.color = "red";
+        };
+    </script>
+</body>
+</html>
